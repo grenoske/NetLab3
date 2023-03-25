@@ -1,0 +1,105 @@
+﻿@model DetailwhOrderViewModel
+@{
+    ViewData["Title"] = "whOrderDetail";
+}
+
+<h1>whOrderDetail</h1>
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <div class="col-12 col-lg-6 pb-4">
+                <div class="row">
+                    <h4>
+                        Order Details
+                    </h4>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Order Id:
+                    </div>
+                    <div class="col-9">
+                        @Model.Id
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Status:
+                    </div>
+                    <div class="col-9">
+                        @Model.Status
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Date:
+                    </div>
+                    <div class="col-9">
+                        @Model.Date
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Sum:
+                    </div>
+                    <div class="col-9">
+                        @Model.Sum $
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Quantity:
+                    </div>
+                    <div class="col-9">
+                        @Model.Quantity
+                    </div>
+                </div>
+                <div class="row">
+                    <h4>
+                        Product
+                    </h4>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        ProductId:
+                    </div>
+                    <div class="col-9">
+                        @Model.ProductId
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Name:
+                    </div>
+                    <div class="col-9">
+                        @Model.ProductName
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Company:
+                    </div>
+                    <div class="col-9">
+                        @Model.ProductCompany
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Price:
+                    </div>
+                    <div class="col-9">
+                        @Model.ProductPrice $
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="container p-3">
+        <div class="row pt-4">
+            <div class="text-center">
+                <a asp-controller="whOrder" asp-action="Index" class="btn btn-primary">
+                    Back to Warehouse Orders List
+                </a>
+            </div>
+        </div>
+    </div>

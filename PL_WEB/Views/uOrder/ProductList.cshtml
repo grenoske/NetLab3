@@ -1,0 +1,118 @@
+﻿@model IEnumerable<ProductViewModel>
+@{
+    ViewData["Title"] = "ProductList";
+}
+
+
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Product Selection</h2>
+        </div>
+    </div>
+</div>
+
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="text-center">
+            <a asp-controller="uOrder" asp-action="ProductAdd" class="btn btn-primary">
+                <i class="bg-info bi-plus-circle"></i> &nbsp; Add product
+            </a>
+        </div>
+    </div>
+    <form asp-controller="uOrder" asp-action="ProductSearch" method="get">
+        <p>
+            Name: <input type="text" name="Name" />
+            <input type="submit" value="Search" />
+        </p>
+    </form>
+</div>
+
+<table class="d-lg-table table-bordered table-striped" style="width:100%">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Company
+            </th>
+            <th>
+                Price
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>
+                    @product.Id
+                </td>
+                <td>
+                    @product.Name 
+                </td>
+                <td>
+                    @product.Company
+                </td>
+                <td>
+                    @product.Price $
+                </td>
+                <td>
+                    <div style="float:right">
+                        <a asp-action="ProductDetail" class="btn btn-primary form-control" asp-route-id="@product.Id">
+                            Details
+                        </a>
+                    </div>
+                    <div style="float:right">
+                        <a asp-action="MakeOrder" class="btn btn-primary form-control" asp-route-id="@product.Id">
+                            Select
+                        </a>
+                    </div>
+                    @if (User.IsInRole("admin"))
+                    {
+                        <div style="float:right">
+                            <form method="post" asp-action="ProductDelete" asp-route-id="@product.Id">
+                                <button type="submit" class="btn btn-danger form-control">Delete</button>
+                            </form>
+                        </div>
+                    }
+                </td>
+                
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="text-center">
+            <a asp-controller="uOrder" asp-action="ProductList" asp-route-pageA="-1" class="btn btn-primary">
+                    Prev
+            </a>
+            <a asp-controller="uOrder" asp-action="ProductList" asp-route-pageA="2"class="btn btn-primary">
+                    Next 
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="text-center">
+            <a asp-controller="uOrder" asp-action="Index" class="btn btn-primary">
+                Back to Orders
+            </a>
+        </div>
+    </div>
+</div>
+
+
+
+
+

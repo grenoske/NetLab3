@@ -1,0 +1,108 @@
+﻿@model IEnumerable<uOrderViewModel>
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Your Orders</h2>
+        </div>
+    </div>
+</div>
+
+<div class="container p-3">
+    <form asp-controller="uOrder" asp-action="UserOrderSearch" method="get">
+        <p>
+            Id: <input type="text" name="Id" />
+            <input type="submit" value="Search" />
+        </p>
+    </form>
+</div>
+
+<table class="d-lg-table table-bordered table-striped" style="width:100%">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                ProductId
+            </th>
+            <th>
+                Address
+            </th>
+            <th>
+                Quantity
+            </th>
+            <th>
+                Sum
+            </th>
+            <th>
+                Date
+            </th>
+            <th>
+                Status
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>
+                    @order.Id
+                </td>
+                <td>
+                    @order.ProductId 
+                </td>
+                <td>
+                    @order.Address
+                </td>
+                <td>
+                    @order.Quantity
+                </td>
+                <td>
+                    @order.Sum $
+                </td>
+                <td>
+                    @order.Date
+                </td>
+                <td>
+                    @order.Status
+                </td>
+                <td>
+                    <a asp-action="uOrderDetail" class="btn btn-primary form-control" asp-route-id="@order.Id">
+                        Details
+                    </a>
+                </td>
+                
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="text-center">
+            <a asp-controller="uOrder" asp-action="Index" asp-route-pageA="-1" class="btn btn-primary">
+                    Prev
+            </a>
+            <a asp-controller="uOrder" asp-action="Index" asp-route-pageA="2"class="btn btn-primary">
+                    Next 
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="text-center">
+            <a asp-controller="uOrder" asp-action="ProductList" class="btn btn-primary">
+                <i class="bg-info bi-plus-circle"></i> &nbsp; Make New Order
+            </a>
+        </div>
+    </div>
+</div>
+

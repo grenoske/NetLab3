@@ -1,0 +1,163 @@
+﻿@model DetailuOrderViewModel
+@{
+    ViewData["Title"] = "uOrderDetail";
+}
+
+<h1>uOrderDetail</h1>
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <div class="col-12 col-lg-6 pb-4">
+                <div class="row">
+                    <h4>
+                        Order Details
+                    </h4>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Order Id:
+                    </div>
+                    <div class="col-9">
+                        @Model.Id
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Status:
+                    </div>
+                    <div class="col-9">
+                        @Model.Status
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Date:
+                    </div>
+                    <div class="col-9">
+                        @Model.Date
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Sum:
+                    </div>
+                    <div class="col-9">
+                        @Model.Sum $
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Quantity:
+                    </div>
+                    <div class="col-9">
+                        @Model.Quantity
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Address:
+                    </div>
+                    <div class="col-9">
+                        @Model.Address
+                    </div>
+                </div>
+                <div class="row">
+                    <h4>
+                        Product
+                    </h4>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        ProductId:
+                    </div>
+                    <div class="col-9">
+                        @Model.ProductId
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Name:
+                    </div>
+                    <div class="col-9">
+                        @Model.ProductName
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Company:
+                    </div>
+                    <div class="col-9">
+                        @Model.ProductCompany
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Price:
+                    </div>
+                    <div class="col-9">
+                        @Model.ProductPrice $
+                    </div>
+                </div>
+                <div class="row">
+                    <h4>
+                        User Info
+                    </h4>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        UserID:
+                    </div>
+                    <div class="col-9">
+                        @Model.UserId
+                    </div>
+                </div>
+                <div class="row my-1">
+                    <div class="col-3">
+                        Username:
+                    </div>
+                    <div class="col-9">
+                        @Model.UserLogin 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Status != "complete" && Model.Status != "cancel")
+{
+    <div class="container p-3">
+        <div class="row pt-4">
+            <div class="text-center">
+                <a asp-controller="uOrder" asp-action="uOrderCancel" asp-route-id="@Model.Id" class="btn btn-danger">
+                    Cancel This Order
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+@if (User.IsInRole("customer"))
+{
+    <div class="container p-3">
+        <div class="row pt-4">
+            <div class="text-center">
+                <a asp-controller="uOrder" asp-action="Index" class="btn btn-primary">
+                    Back to Order List
+                </a>
+            </div>
+        </div>
+    </div>
+}
+@if (User.IsInRole("admin"))
+{
+    <div class="container p-3">
+        <div class="row pt-4">
+            <div class="text-center">
+                <a asp-controller="whOrder" asp-action="AllUserOrders" class="btn btn-primary">
+                    Back to User Orders List
+                </a>
+            </div>
+        </div>
+    </div>
+}

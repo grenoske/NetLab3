@@ -1,0 +1,118 @@
+﻿@model IEnumerable<uOrderViewModel>
+@{
+    ViewData["Title"] = "DeliveryQueue";
+}
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Warehouse Orders</h2>
+        </div>
+    </div>
+</div>
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="text-right">
+            <a asp-controller="whOrder" asp-action="Index" class="btn btn-primary">
+                All Warehouse Orders
+            </a>
+            <a asp-controller="whOrder" asp-action="PurchaseQueue" class="btn btn-primary">
+                Queue for purchase
+            </a>
+            <a asp-controller="whOrder" asp-action="AllUserOrders" class="btn btn-primary">
+                All User Orders
+            </a>
+            <a class="btn btn-secondary">
+                Queue for delivery
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container p-2">
+    <div class="row pt-1">
+        <div class="col-15">
+            <div class="text-lg-end">
+                <a asp-controller="whOrder" asp-action="DeliveryNextOrder" class="btn btn-primary">
+                    Delivery next order
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="d-lg-table table-bordered table-striped" style="width:100%">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                ProductId
+            </th>
+            <th>
+                Address
+            </th>
+            <th>
+                Quantity
+            </th>
+            <th>
+                Sum
+            </th>
+            <th>
+                Date
+            </th>
+            <th>
+                Status
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>
+                    @order.Id
+                </td>
+                <td>
+                    @order.ProductId 
+                </td>
+                <td>
+                    @order.Address
+                </td>
+                <td>
+                    @order.Quantity
+                </td>
+                <td>
+                    @order.Sum $
+                </td>
+                <td>
+                    @order.Date
+                </td>
+                <td>
+                    @order.Status
+                </td>
+                <td>
+                    <a asp-action="DeliverySpecificOrder" class="btn btn-primary form-control" asp-route-id="@order.Id">
+                        Delivery
+                    </a>
+                </td>
+                
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="text-center">
+            <a asp-controller="whOrder" asp-action="DeliveryQueue" asp-route-pageA="-1" class="btn btn-primary">
+                    Prev
+            </a>
+            <a asp-controller="whOrder" asp-action="DeliveryQueue" asp-route-pageA="2"class="btn btn-primary">
+                    Next 
+            </a>
+        </div>
+    </div>
+</div>
