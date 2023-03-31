@@ -70,12 +70,13 @@ namespace PL_WEB.Controllers
             try
             {
                 _whOrderService.DeliveryProductToWh(id);
+                return RedirectToAction(nameof(PurchaseQueue));
             }
             catch (ValidationException ex)
             {
-                return Content(ex.Message);
+                return BadRequest(ex.Message);
             }
-            return RedirectToAction(nameof(PurchaseQueue));
+            
         }
 
         public IActionResult ProcessNextPurchase()
@@ -83,12 +84,13 @@ namespace PL_WEB.Controllers
             try
             {
                 _whOrderService.DeliveryProductToWh();
+                return RedirectToAction(nameof(PurchaseQueue));
             }
             catch(ValidationException ex)
             {
-                return Content(ex.Message);
+                return BadRequest(ex.Message);
             }
-            return RedirectToAction(nameof(PurchaseQueue));
+            
         }
 
         public IActionResult DeliverySpecificOrder(int id)
@@ -96,12 +98,13 @@ namespace PL_WEB.Controllers
             try
             {
                 _whOrderService.DeliveryProductToUser(id);
+                return RedirectToAction(nameof(DeliveryQueue));
             }
             catch (ValidationException ex)
             {
-                return Content(ex.Message);
+                return BadRequest(ex.Message);
             }
-            return RedirectToAction(nameof(DeliveryQueue));
+            
         }
 
         public IActionResult DeliveryNextOrder()
@@ -109,12 +112,13 @@ namespace PL_WEB.Controllers
             try
             {
                 _whOrderService.DeliveryProductToUser();
+                return RedirectToAction(nameof(DeliveryQueue));
             }
             catch (ValidationException ex)
             {
-                return Content(ex.Message);
+                //return Content(ex.Message);
+                return BadRequest(ex.Message);
             }
-            return RedirectToAction(nameof(DeliveryQueue));
         }
 
         public IActionResult whOrderDetail(int? id)
@@ -126,7 +130,7 @@ namespace PL_WEB.Controllers
             }
             catch (ValidationException ex)
             {
-                return Content(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
     }

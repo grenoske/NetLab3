@@ -15,17 +15,23 @@ namespace xNetLab3_Test
 {
     public class UserServiceTest
     {
+        private Mock<IUnitOfWork> mockUnitOfWork;
+        private UserService userService;
+
+        public UserServiceTest()
+        {
+            mockUnitOfWork = new Mock<IUnitOfWork>();
+            userService = new UserService(mockUnitOfWork.Object);
+        }
+
         [Fact]
         public void GetUser_NullLogin_ErrorReturn()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-
-            IUserService orderService = new UserService(mockUnitOfWork.Object);
             string Login = null;
 
             // Act
-            Action action = new Action(() => orderService.GetUser(Login, null));
+            Action action = new Action(() => userService.GetUser(Login, null));
 
             // Assert
             action.Should().Throw<ValidationException>()
@@ -36,18 +42,16 @@ namespace xNetLab3_Test
         public void GetUser_NoUser_ErrorReturn()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(u => u.Users.GetFirstOrDefault(
                 It.IsAny<Expression<Func<User, bool>>>(),
                 It.IsAny<string>(),
                 It.IsAny<bool>()
                 )).Returns(default(User));
 
-            IUserService orderService = new UserService(mockUnitOfWork.Object);
             string Login = "TestLogin";
 
             // Act
-            Action action = new Action(() => orderService.GetUser(Login, null));
+            Action action = new Action(() => userService.GetUser(Login, null));
 
             // Assert
             action.Should().Throw<ValidationException>()
@@ -58,19 +62,17 @@ namespace xNetLab3_Test
         public void GetUser_NotCorrectPass_ErrorReturn()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(u => u.Users.GetFirstOrDefault(
                 It.IsAny<Expression<Func<User, bool>>>(),
                 It.IsAny<string>(),
                 It.IsAny<bool>()
                 )).Returns(new User { Id = 1, Login = "TestLogin", Password = "Correct" });
 
-            IUserService orderService = new UserService(mockUnitOfWork.Object);
             string Login = "TestLogin";
             string Password = "notCorrect";
 
             // Act
-            Action action = new Action(() => orderService.GetUser(Login, Password));
+            Action action = new Action(() => userService.GetUser(Login, Password));
 
             // Assert
             action.Should().Throw<ValidationException>()
@@ -84,20 +86,17 @@ namespace xNetLab3_Test
             User user = new User { Id = 1, Login = "TestLogin", Password = "Correct" };
             UserDTO expectedUser = new UserDTO { Id = 1, Login = "TestLogin", Password = "Correct" };
 
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-
             mockUnitOfWork.Setup(u => u.Users.GetFirstOrDefault(
                 It.IsAny<Expression<Func<User, bool>>>(),
                 It.IsAny<string>(),
                 It.IsAny<bool>()
                 )).Returns(user);
 
-            IUserService orderService = new UserService(mockUnitOfWork.Object);
             string Login = "TestLogin";
             string Password = "Correct";
 
             // Act
-            var User = orderService.GetUser(Login, Password);
+            var User = userService.GetUser(Login, Password);
 
             // Assert
             User.Should().NotBeNull();
@@ -119,8 +118,6 @@ namespace xNetLab3_Test
                 new UserDTO { Id = 2, Login = "TestLogin2", Password = "Correct2" },
             };
 
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-
             mockUnitOfWork.Setup(u => u.Users.GetAll(
                 It.IsAny<Expression<Func<User, bool>>>(),
                 It.IsAny<int>(),
@@ -128,10 +125,8 @@ namespace xNetLab3_Test
                 It.IsAny<string>()
                 )).Returns(users);
 
-            IUserService orderService = new UserService(mockUnitOfWork.Object);
-
             // Act
-            var Users = orderService.GetUsers();
+            var Users = userService.GetUsers();
 
             // Assert
             Users.Should().NotBeNull();
@@ -147,15 +142,12 @@ namespace xNetLab3_Test
             User user = new User { Id = 1, Login = "TestLogin", Password = "Correct", Role = "test" };
             UserDTO UserToReg = new UserDTO { Id = 1, Login = "TestLogin", Password = "Correct", Role = "test" };
 
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
 
             mockUnitOfWork.Setup(u => u.Users.GetFirstOrDefault(
                 It.IsAny<Expression<Func<User, bool>>>(),
                 It.IsAny<string>(),
                 It.IsAny<bool>()
                 )).Returns(user);
-
-            IUserService userService = new UserService(mockUnitOfWork.Object);
 
             // Act
             Action action = new Action(() => userService.RegUser(UserToReg));
@@ -171,7 +163,6 @@ namespace xNetLab3_Test
             // Arrange
             UserDTO UserToReg = new UserDTO { Id = 1, Login = "TestLogin", Password = "Correct", Role = "test" };
 
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             var userRepository = new Mock<IUserRepository>();
 
             mockUnitOfWork.Setup(uof => uof.Users).Returns(userRepository.Object);
@@ -181,8 +172,6 @@ namespace xNetLab3_Test
                 It.IsAny<string>(),
                 It.IsAny<bool>()
                 )).Returns(default(User));
-
-            IUserService userService = new UserService(mockUnitOfWork.Object);
 
             // Act
             userService.RegUser(UserToReg);
@@ -196,8 +185,6 @@ namespace xNetLab3_Test
         public void Dispose_UserService()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IUserService userService = new UserService(mockUnitOfWork.Object);
 
             // Act
             userService.Dispose();

@@ -169,8 +169,8 @@ namespace xNetLab3_Test
             var result = whOrderController.ProcessSpecificPurchase(id);
 
             // Assert
-            result.Should().BeOfType<ContentResult>()
-                .Which.Content.Should().Be("Product not Found");
+            result.Should().BeOfType<BadRequestObjectResult>()
+                .Which.Value.Should().Be("Product not Found");
         }
 
         [Fact]
@@ -224,8 +224,8 @@ namespace xNetLab3_Test
             var result = whOrderController.ProcessNextPurchase();
 
             // Assert
-            result.Should().BeOfType<ContentResult>()
-                .Which.Content.Should().Be("Order not Found", "");
+            result.Should().BeOfType<BadRequestObjectResult>()
+               .Which.Value.Should().Be("Order not Found", "");
         }
 
         [Fact]
@@ -243,8 +243,8 @@ namespace xNetLab3_Test
             var result = whOrderController.DeliverySpecificOrder(id);
 
             // Assert
-            result.Should().BeOfType<ContentResult>()
-                .Which.Content.Should().Be("User not Found");
+            result.Should().BeOfType<BadRequestObjectResult>()
+                .Which.Value.Should().Be("User not Found");
         }
 
         [Fact]
@@ -298,8 +298,10 @@ namespace xNetLab3_Test
             var result = whOrderController.DeliveryNextOrder();
 
             // Assert
-            result.Should().BeOfType<ContentResult>()
-                .Which.Content.Should().Be("Order not Found");
+            result.Should().BeOfType<BadRequestObjectResult>()
+                .Which.Value.Should().Be("Order not Found");
+                //.Which.object.Should().Be("Order not Found");
+            //result.Should().BeOfType<NotFoundResult>(); // 404
         }
 
         [Fact]
@@ -340,8 +342,8 @@ namespace xNetLab3_Test
             var result = controller.whOrderDetail(invalidId);
 
             // Assert
-            result.Should().BeOfType<ContentResult>()
-                .Which.Content.Should().Be(expectedMessage);
+            result.Should().BeOfType<BadRequestObjectResult>()
+                .Which.Value.Should().Be(expectedMessage);
         }
 
         [Fact]

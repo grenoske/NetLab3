@@ -18,7 +18,7 @@ namespace DAL.Repositories
         public Repository(ApplicationDbContext db)
         {
             _db = db;
-            this.dbSet = _db.Set<T>();
+            this.dbSet = _db.Set<T>(); //get db set<T> from db
         }
 
         public void Add(T entity)

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using PL_WEB.Util;
 
+
 namespace PL_WEB.Controllers
 {
     [Authorize]
@@ -27,7 +28,7 @@ namespace PL_WEB.Controllers
             
             int page = _cookieManager.PageMove("PageNumber" + nameof(Index), pageA, HttpContext.Request, HttpContext.Response);
 
-            int id = Int32.Parse(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            int id = this.User.GetUserId(); // Int32.Parse(user.FindFirst(ClaimTypes.NameIdentifier).Value); was moved to extentionMethod 
             IEnumerable<uOrderDTO> objUOrdersList = _orderService.GetUserOrders(id, page);
             var objUOrdersViewList = objUOrdersList.Select(uOrders => (uOrderViewModel)uOrders);
             return View(objUOrdersViewList);
@@ -63,7 +64,7 @@ namespace PL_WEB.Controllers
 
         public IActionResult UserOrderSearch(int? id)
         {
-            int UserId = Int32.Parse(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            int UserId = this.User.GetUserId();
             if (id == null)
                 return RedirectToAction(nameof(Index));
             IEnumerable<uOrderDTO> objuOrderList = _orderService.SearchUserOrder(id, UserId);
@@ -71,10 +72,10 @@ namespace PL_WEB.Controllers
             return View("Index", objOrdersViewList);
         }
 
-        public IActionResult ProductAdd(int id)
+        public IActionResult ProductAdd(int? id)
         {
             ProductViewModel objProduct = new ProductViewModel();
-            if (id != 0)
+            if (id != null)
             {
                 try
                 {
@@ -82,7 +83,7 @@ namespace PL_WEB.Controllers
                 }
                 catch (ValidationException ex)
                 {
-                    return Content(ex.Message);
+                    return BadRequest(ex.Message);
                 }
             }
             return View(objProduct);
@@ -116,13 +117,13 @@ namespace PL_WEB.Controllers
             try
             {
                 _orderService.RemoveProduct(id);
+                return RedirectToAction(nameof(ProductList));
             }
             catch (ValidationException ex)
             {
-                return Content(ex.Message);
+                return BadRequest(ex.Message);
             }
 
-            return RedirectToAction(nameof(ProductList));
         }
 
         public IActionResult ProductDetail(int? id)
@@ -134,7 +135,7 @@ namespace PL_WEB.Controllers
             }
             catch (ValidationException ex)
             {
-                return Content(ex.Message);
+                return BadRequest(ex.Message);
             }
             
         }
@@ -148,7 +149,7 @@ namespace PL_WEB.Controllers
             }
             catch (ValidationException ex)
             {
-                return Content(ex.Message);
+                return BadRequest(ex.Message);
             }
 
         }
@@ -162,13 +163,13 @@ namespace PL_WEB.Controllers
             }
             catch (ValidationException ex)
             {
-                return Content(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
         public IActionResult MakeOrder(int? id)
         {
-            int UserId = Int32.Parse(this.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            int UserId = this.User.GetUserId();
             try
             {
                 ProductDTO product = _orderService.GetProduct(id);
@@ -178,7 +179,7 @@ namespace PL_WEB.Controllers
             }
             catch (ValidationException ex)
             {
-                return Content(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 

@@ -21,15 +21,7 @@ namespace DAL.Repositories
 
         public void Update(Product obj)
         {
-            var objFromDb = _db.Products.FirstOrDefault(u => u.Id == obj.Id);   
-            if(objFromDb != null)
-            {
-                objFromDb.Name = obj.Name;
-                objFromDb.Company = obj.Company;
-                objFromDb.Price = obj.Price;
-                objFromDb.Orders = obj.Orders;
-            }
-
+            _db.Products.Update(obj);
         }
     }
 }

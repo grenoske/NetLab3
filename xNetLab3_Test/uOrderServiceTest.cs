@@ -15,12 +15,19 @@ namespace xNetLab3_Test
 {
     public class uOrderServiceTest
     {
+        private Mock<IUnitOfWork> mockUnitOfWork;
+        private IuOrderService orderService;
+
+        public uOrderServiceTest()
+        {
+            mockUnitOfWork = new Mock<IUnitOfWork>();
+            orderService = new uOrderService(mockUnitOfWork.Object);
+        }
+
         [Fact]
         public void MakeOrder_WithnullOrder_ErrorReturn()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
 
             // Act
             Action action = new Action(() => orderService.MakeOrder(null));
@@ -35,8 +42,6 @@ namespace xNetLab3_Test
         {
             // Arrange
             uOrderDTO order = new uOrderDTO { Id = 1, Quantity = -1 };
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
 
             // Act
             Action action = new Action(() => orderService.MakeOrder(order));
@@ -50,9 +55,8 @@ namespace xNetLab3_Test
         public void MakeOrder_NoProduct_ProductErrorReturn()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             uOrderDTO order = new uOrderDTO { Id = 1 };
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
+
             mockUnitOfWork.Setup(u => u.Products.GetFirstOrDefault(
                 It.IsAny<Expression<Func<Product, bool>>>(),
                 It.IsAny<string>(),
@@ -71,9 +75,7 @@ namespace xNetLab3_Test
         public void MakeOrder_NoProductQuantity_ProductQuantityErrorReturn()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             uOrderDTO order = new uOrderDTO { Id = 1 };
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             mockUnitOfWork.Setup(u => u.Products.GetFirstOrDefault(
                 It.IsAny<Expression<Func<Product, bool>>>(),
                 It.IsAny<string>(),
@@ -92,7 +94,6 @@ namespace xNetLab3_Test
         public void MakeOrder_OrderWithIncorrectUserId_ErrorReturn()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             var userOrderRepository = new Mock<IuOrderRepository>();
             mockUnitOfWork.Setup(uow => uow.uOrders).Returns(userOrderRepository.Object);
 
@@ -111,7 +112,6 @@ namespace xNetLab3_Test
                 )).Returns(default(User));
 
             uOrderDTO orderDTO = new uOrderDTO { Quantity = 100, Address = "2a" };
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
 
             // Act
             Action action = new Action(() => orderService.MakeOrder(orderDTO));
@@ -125,7 +125,6 @@ namespace xNetLab3_Test
         public void MakeOrder_CorrectOrderWithEnoughQuantity()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             var userOrderRepository = new Mock<IuOrderRepository>();
             mockUnitOfWork.Setup(uow => uow.uOrders).Returns(userOrderRepository.Object);
 
@@ -145,7 +144,6 @@ namespace xNetLab3_Test
                 )).Returns(user);
 
             uOrderDTO orderDTO = new uOrderDTO { Quantity=100, Address="2a" };
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
 
             // Act
             orderService.MakeOrder(orderDTO);
@@ -159,7 +157,6 @@ namespace xNetLab3_Test
         public void MakeOrder_CorrectOrderWithNOTEnoughQuantity()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             var userOrderRepository = new Mock<IuOrderRepository>();
             var whOrderRepository = new Mock<IwhOrderRepository>();
             mockUnitOfWork.Setup(uow => uow.uOrders).Returns(userOrderRepository.Object);
@@ -181,7 +178,6 @@ namespace xNetLab3_Test
                 )).Returns(user);
 
             uOrderDTO orderDTO = new uOrderDTO { Quantity = 100, Address = "2a" };
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
 
             // Act
             orderService.MakeOrder(orderDTO);
@@ -196,12 +192,9 @@ namespace xNetLab3_Test
         {
             // Arrange
             var mockOrderRepository = new Mock<IuOrderRepository>();
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
 
             mockOrderRepository.Setup(a => a.GetAll(null, default, default, null)).Returns(new List<uOrder>());
             mockUnitOfWork.Setup(a => a.uOrders).Returns(mockOrderRepository.Object);
-
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
 
             // Act
             var result = orderService.GetOrders();
@@ -214,14 +207,12 @@ namespace xNetLab3_Test
         public void GetProduct_ProductNotExist_Error()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(u => u.Products.GetFirstOrDefault(
                 It.IsAny<Expression<Func<Product, bool>>>(),
                 It.IsAny<string>(),
                 It.IsAny<bool>()
                 )).Returns(default(Product));
 
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             int? id = 1;
             // Act
             Action action = new Action(() => orderService.GetProduct(id));
@@ -235,8 +226,6 @@ namespace xNetLab3_Test
         public void GetProduct_IdNull_Error()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             int? id = null;
             // Act
             Action action = new Action(() => orderService.GetProduct(id));
@@ -252,14 +241,11 @@ namespace xNetLab3_Test
             // Arrange
             int? id = 1;
             Product product = new Product { Id = 1, Name = "TestProduct", Company = "TestCompany", Price = 1 };
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(u => u.Products.GetFirstOrDefault(
                 p => p.Id == id,
                 It.IsAny<string>(),
                 It.IsAny<bool>()
                 )).Returns(product);
-
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             
             // Act
             var productDTO = orderService.GetProduct(id);
@@ -272,10 +258,7 @@ namespace xNetLab3_Test
         public void AddProduct_ProductDTONull_Error()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-
             ProductDTO productDTO = null;
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
 
             // Act
             Action action = new Action(() => orderService.AddProduct(productDTO));
@@ -290,7 +273,6 @@ namespace xNetLab3_Test
         {
             // Arrange
             Product product = new Product { Id = 1, Name = "TestProduct", Company = "TestCompany", Price = 1 };
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(u => u.Products.GetFirstOrDefault(
                 It.IsAny<Expression<Func<Product, bool>>>(),
                 It.IsAny<string>(),
@@ -298,7 +280,6 @@ namespace xNetLab3_Test
                 )).Returns(product);
 
             ProductDTO productDTO = new ProductDTO() { Name = "TestProduct"};
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
 
             // Act
             Action action = new Action(() => orderService.AddProduct(productDTO));
@@ -312,7 +293,6 @@ namespace xNetLab3_Test
         public void AddProduct_WithNewProduct_ProductQuantityAdded()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             var productQuantityRepository = new Mock<IProductQuantityRepository>();
             mockUnitOfWork.Setup(uow => uow.ProductQuantity).Returns(productQuantityRepository.Object);
 
@@ -322,7 +302,6 @@ namespace xNetLab3_Test
                 It.IsAny<bool>()
                 )).Returns(default(Product));
             ProductDTO productDTO = new ProductDTO { Name = "NewProduct", Company = "Company", Price = 1 };
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
 
             // Act
             orderService.AddProduct(productDTO);
@@ -337,7 +316,6 @@ namespace xNetLab3_Test
         {
             // Arrange
             Product product = new Product { Id = 1, Name = "TestProduct", Company = "TestCompany", Price = 1 };
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             var producRepository = new Mock<IProductRepository>();
             mockUnitOfWork.Setup(uow => uow.Products).Returns(producRepository.Object);
 
@@ -346,8 +324,6 @@ namespace xNetLab3_Test
                 It.IsAny<string>(),
                 It.IsAny<bool>()
                 )).Returns(product);
-           
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
 
             // Act
             orderService.RemoveProduct(product.Id);
@@ -361,14 +337,12 @@ namespace xNetLab3_Test
         public void RemoveProduct_ProductNotExist_Error()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(u => u.Products.GetFirstOrDefault(
                 It.IsAny<Expression<Func<Product, bool>>>(),
                 It.IsAny<string>(),
                 It.IsAny<bool>()
                 )).Returns(default(Product));
 
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             int id = 1;
             // Act
             Action action = new Action(() => orderService.RemoveProduct(id));
@@ -382,8 +356,6 @@ namespace xNetLab3_Test
         public void GetDetailProduct_IdNull_Error()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             int? id = null;
             // Act
             Action action = new Action(() => orderService.GetDetailProduct(id));
@@ -397,8 +369,6 @@ namespace xNetLab3_Test
         public void GetDetailProduct_ProductNotExist_Error()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             mockUnitOfWork.Setup(u => u.Products.GetFirstOrDefault(
                 It.IsAny<Expression<Func<Product, bool>>>(),
                 It.IsAny<string>(),
@@ -418,8 +388,6 @@ namespace xNetLab3_Test
         public void GetDetailProduct_ProductQuantityNotExist_Error()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             mockUnitOfWork.Setup(u => u.Products.GetFirstOrDefault(
                 It.IsAny<Expression<Func<Product, bool>>>(),
                 It.IsAny<string>(),
@@ -443,14 +411,11 @@ namespace xNetLab3_Test
             Product product = new Product { Id = 1, Name = "TestProduct", Company = "TestCompany", Price = 1 };
             product.ProductQuantity = new ProductQuantity { Id = 1, ProductId = 1, Quantity = 0, ReservedQuantity = 0, WarehouseId = 1 };
             DetailProductDTO detailProductDTOexpected = new DetailProductDTO { Id = product.Id, Name = product.Name, Company = product.Company, Price = product.Price, Quantity = product.ProductQuantity.Quantity, ReservedQuantity = product.ProductQuantity.ReservedQuantity };
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(u => u.Products.GetFirstOrDefault(
                 p => p.Id == id,
                 It.IsAny<string>(),
                 It.IsAny<bool>()
                 )).Returns(product);
-
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
 
             // Act
             var detailProductDTO = orderService.GetDetailProduct(id);
@@ -463,8 +428,6 @@ namespace xNetLab3_Test
         public void GetDetailuOrder_IdNull_Error()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             int? id = null;
             // Act
             Action action = new Action(() => orderService.GetDetailuOrder(id));
@@ -478,8 +441,6 @@ namespace xNetLab3_Test
         public void GetDetailuOrder_OrderNotExist_Error()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             mockUnitOfWork.Setup(u => u.uOrders.GetFirstOrDefault(
                 It.IsAny<Expression<Func<uOrder, bool>>>(),
                 It.IsAny<string>(),
@@ -499,8 +460,6 @@ namespace xNetLab3_Test
         public void GetDetailuOrder_ProductNotExist_Error()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             mockUnitOfWork.Setup(u => u.uOrders.GetFirstOrDefault(
                 It.IsAny<Expression<Func<uOrder, bool>>>(),
                 It.IsAny<string>(),
@@ -520,8 +479,6 @@ namespace xNetLab3_Test
         public void GetDetailuOrder_UserNotExist_Error()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             mockUnitOfWork.Setup(u => u.uOrders.GetFirstOrDefault(
                 It.IsAny<Expression<Func<uOrder, bool>>>(),
                 It.IsAny<string>(),
@@ -544,8 +501,6 @@ namespace xNetLab3_Test
             // Arrange
             uOrder uOrder = new uOrder { Id = 1, Address = "TestAddress", Quantity = 100, Status = "test", Date = date, Sum = 1000, ProductId = 1, Product = new Product { Id = 1, Name = "TestProduct", Price = 100 }, User = new User { Id = 1, Login = "TestName"} };
             DetailuOrderDTO detailuOrderDTOexpected = new DetailuOrderDTO { Id = 1, Address = "TestAddress", Quantity = 100, Status = "test", Date = date, Sum = 1000, ProductId = 1, ProductName = "TestProduct", ProductPrice = 100, UserId = 1, UserLogin = "TestName" };
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             mockUnitOfWork.Setup(u => u.uOrders.GetFirstOrDefault(
                 It.IsAny<Expression<Func<uOrder, bool>>>(),
                 It.IsAny<string>(),
@@ -579,8 +534,6 @@ namespace xNetLab3_Test
                 new ProductDTO{ Id = 3, Name = "ProductTest3", Company = "TestCompany3", Price = 100 },
             };
 
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             mockUnitOfWork.Setup(u => u.Products.GetAll(
                 It.IsAny<Expression<Func<Product, bool>>>(),
                 It.IsAny<int>(),
@@ -614,8 +567,6 @@ namespace xNetLab3_Test
                 new ProductDTO{ Id = 2, Name = "TestProduct2", Company = "TestCompany2", Price = 100 },
             };
 
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             mockUnitOfWork.Setup(u => u.Products.GetAll(
                 It.IsAny<Expression<Func<Product, bool>>>(),
                 It.IsAny<int>(),
@@ -651,8 +602,6 @@ namespace xNetLab3_Test
              };
 
             int? id = 1;
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             mockUnitOfWork.Setup(u => u.uOrders.GetAll(
                 It.IsAny<Expression<Func<uOrder, bool>>>(),
                 It.IsAny<int>(),
@@ -674,16 +623,13 @@ namespace xNetLab3_Test
         public void CancelOrder_NoOrder_ErrorReturn()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(u => u.uOrders.GetFirstOrDefault(
                 It.IsAny<Expression<Func<uOrder, bool>>>(),
                 It.IsAny<string>(),
                 It.IsAny<bool>()
                 )).Returns(default(uOrder));
-
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
-
             int id = 1;
+
             // Act
             Action action = new Action(() => orderService.CanceluOrder(id));
 
@@ -696,7 +642,6 @@ namespace xNetLab3_Test
         public void CancelOrder_NoQuantity_ErrorReturn()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(u => u.uOrders.GetFirstOrDefault(
                 It.IsAny<Expression<Func<uOrder, bool>>>(),
                 It.IsAny<string>(),
@@ -709,9 +654,8 @@ namespace xNetLab3_Test
                 It.IsAny<bool>()
                 )).Returns(default(ProductQuantity));
 
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
-
             int id = 1;
+
             // Act
             Action action = new Action(() => orderService.CanceluOrder(id));
 
@@ -724,7 +668,6 @@ namespace xNetLab3_Test
         public void CancelOrder_NotCorrectOrederStatus_ErrorReturn()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(u => u.uOrders.GetFirstOrDefault(
                 It.IsAny<Expression<Func<uOrder, bool>>>(),
                 It.IsAny<string>(),
@@ -737,7 +680,6 @@ namespace xNetLab3_Test
                 It.IsAny<bool>()
                 )).Returns(new ProductQuantity { Id = 1});
 
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
 
             int id = 1;
             // Act
@@ -752,7 +694,6 @@ namespace xNetLab3_Test
         public void CancelOrder_WarehouseOrderNotFound_ErrorReturn()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(u => u.uOrders.GetFirstOrDefault(
                 It.IsAny<Expression<Func<uOrder, bool>>>(),
                 It.IsAny<string>(),
@@ -764,8 +705,6 @@ namespace xNetLab3_Test
                 It.IsAny<string>(),
                 It.IsAny<bool>()
                 )).Returns(new ProductQuantity { Id = 1 });
-
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
 
             int id = 1;
             // Act
@@ -781,7 +720,6 @@ namespace xNetLab3_Test
         {
             // Arrange
             uOrder uOrder = new uOrder { Id = 1, Status = "wait", Quantity = 200, whOrder = new whOrder { Id = 1, Quantity = 100, Status = "wait" } };
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(u => u.uOrders.GetFirstOrDefault(
                 It.IsAny<Expression<Func<uOrder, bool>>>(),
                 It.IsAny<string>(),
@@ -795,9 +733,8 @@ namespace xNetLab3_Test
                 It.IsAny<bool>()
                 )).Returns(productQuantity);
 
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
-
             int id = 1;
+
             // Act
             orderService.CanceluOrder(id);
 
@@ -830,8 +767,6 @@ namespace xNetLab3_Test
              };
 
             int? id = 1;
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             mockUnitOfWork.Setup(u => u.uOrders.GetAll(
                 u => u.Id.ToString().Contains(id.ToString()),
                 It.IsAny<int>(),
@@ -868,8 +803,6 @@ namespace xNetLab3_Test
 
             int? id = 1;
             int? UserId = 1;
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             mockUnitOfWork.Setup(u => u.uOrders.GetAll(
                 u => u.UserId == UserId && u.Id.ToString().Contains(id.ToString()),
                 It.IsAny<int>(),
@@ -904,9 +837,6 @@ namespace xNetLab3_Test
                 new ProductDTO{ Id = 2, Name = "TestProduct2", Company = "TestCompany2", Price = 100 },
                 new ProductDTO{ Id = 3, Name = "ProductTest3", Company = "TestCompany3", Price = 100 },
             };
-
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
             mockUnitOfWork.Setup(u => u.Products.GetAll(
                 It.IsAny<Expression<Func<Product, bool>>>(),
                 It.IsAny<int>(),
@@ -929,8 +859,6 @@ namespace xNetLab3_Test
         public void Dispose_Service()
         {
             // Arrange
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            IuOrderService orderService = new uOrderService(mockUnitOfWork.Object);
 
             // Act
             orderService.Dispose();
